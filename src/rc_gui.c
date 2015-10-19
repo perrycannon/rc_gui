@@ -41,6 +41,7 @@
 #define GET_I2C         "cat /boot/config.txt | grep -q -E \"^(device_tree_param|dtparam)=([^,]*,)*i2c(_arm)?(=(on|true|yes|1))?(,.*)?$\" ; echo $?"
 #define GET_SERIAL      "cat /boot/cmdline.txt | grep -q console=ttyAMA0 ; echo $?"
 #define GET_BOOT_GUI    "service lightdm status | grep -q inactive ; echo $?"
+#define GET_BOOT_SLOW   "test -e /etc/systemd/system/dhcpcd.service.d/wait.conf ; echo $?"
 #define GET_ALOG_SYSD   "cat /etc/systemd/system/getty.target.wants/getty@tty1.service | grep -q autologin ; echo $?"
 #define GET_ALOG_INITD  "cat /etc/inittab | grep -q login ; echo $?"
 #define GET_ALOG_GUI    "cat /etc/lightdm/lightdm.conf | grep -q \"#autologin-user=\" ; echo $?"
@@ -57,6 +58,8 @@
 #define SET_BOOT_CLIA   "sudo raspi-config nonint do_boot_behaviour_new B2"
 #define SET_BOOT_GUI    "sudo raspi-config nonint do_boot_behaviour_new B3"
 #define SET_BOOT_GUIA   "sudo raspi-config nonint do_boot_behaviour_new B4"
+#define SET_BOOT_FAST   "sudo raspi-config nonint do_wait_for_network Fast"
+#define SET_BOOT_SLOW   "sudo raspi-config nonint do_wait_for_network Slow"
 #define SET_RASTRACK    "curl --data \"name=%s&email=%s\" http://rastrack.co.uk/api.php"
 #define CHANGE_PASSWD   "echo pi:%s | sudo chpasswd"
 #define EXPAND_FS       "sudo raspi-config nonint do_expand_rootfs"
@@ -68,7 +71,7 @@ static GObject *expandfs_btn, *passwd_btn, *locale_btn, *timezone_btn, *keyboard
 static GObject *boot_desktop_rb, *boot_cli_rb, *camera_on_rb, *camera_off_rb;
 static GObject *overscan_on_rb, *overscan_off_rb, *ssh_on_rb, *ssh_off_rb;
 static GObject *spi_on_rb, *spi_off_rb, *i2c_on_rb, *i2c_off_rb, *serial_on_rb, *serial_off_rb;
-static GObject *autologin_cb;
+static GObject *autologin_cb, *netwait_cb;
 static GObject *overclock_cb, *memsplit_sb, *hostname_tb;
 static GObject *pwentry1_tb, *pwentry2_tb, *pwok_btn;
 static GObject *rtname_tb, *rtemail_tb, *rtok_btn;
@@ -82,7 +85,7 @@ static GtkWidget *main_dlg;
 
 static char orig_hostname[128];
 static int orig_boot, orig_overscan, orig_camera, orig_ssh, orig_spi, orig_i2c, orig_serial;
-static int orig_clock, orig_gpumem, orig_autolog;
+static int orig_clock, orig_gpumem, orig_autolog, orig_netwait;
 
 /* Reboot flag set after locale change */
 
@@ -388,7 +391,7 @@ static gpointer locale_thread (gpointer data)
     system ("sudo locale-gen");
     sprintf (buffer, "sudo update-locale LANG=%s", glocale);
     system (buffer);
-	gtk_widget_hide (GTK_WIDGET (data));
+	gtk_widget_destroy (GTK_WIDGET (data));
     return NULL;
 }
 
@@ -550,7 +553,17 @@ static void on_set_locale (GtkButton* btn, gpointer ptr)
                 }
 
                 // warn about a short delay...
-                GtkWidget *msg_dlg = (GtkWidget *) gtk_message_dialog_new (GTK_WINDOW (main_dlg), GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_MODAL, GTK_MESSAGE_OTHER, GTK_BUTTONS_NONE, _("Setting locale - please wait..."));
+                GtkWidget *msg_dlg = (GtkWidget *) gtk_dialog_new ();
+                gtk_window_set_title (GTK_WINDOW (msg_dlg), "");
+                gtk_window_set_modal (GTK_WINDOW (msg_dlg), TRUE);
+                gtk_window_set_decorated (GTK_WINDOW (msg_dlg), FALSE);
+                gtk_window_set_destroy_with_parent (GTK_WINDOW (msg_dlg), TRUE);
+                gtk_window_set_skip_taskbar_hint (GTK_WINDOW (msg_dlg), TRUE);
+                GtkWidget *frame = gtk_frame_new (NULL);
+                GtkWidget *label = (GtkWidget *) gtk_label_new (_("Setting locale - please wait..."));
+                gtk_misc_set_padding (GTK_MISC (label), 20, 20);
+                gtk_container_add (GTK_CONTAINER (gtk_dialog_get_content_area (GTK_DIALOG (msg_dlg))), frame);
+                gtk_container_add (GTK_CONTAINER (frame), label);
 	            gtk_widget_show_all (msg_dlg);
 
                 // launch a thread with the system call to update the generated locales
@@ -624,7 +637,7 @@ static void area_changed (GtkComboBox *cb, gpointer ptr)
 static gpointer timezone_thread (gpointer data)
 {
     system ("sudo dpkg-reconfigure --frontend noninteractive tzdata");
-	gtk_widget_hide (GTK_WIDGET (data));
+	gtk_widget_destroy (GTK_WIDGET (data));
     return NULL;
 }
 
@@ -690,7 +703,17 @@ static void on_set_timezone (GtkButton* btn, gpointer ptr)
         system (buffer);
 
         // warn about a short delay...
-        GtkWidget *msg_dlg = (GtkWidget *) gtk_message_dialog_new (GTK_WINDOW (main_dlg), GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_MODAL, GTK_MESSAGE_OTHER, GTK_BUTTONS_NONE, _("Setting timezone - please wait..."));
+        GtkWidget *msg_dlg = (GtkWidget *) gtk_dialog_new ();
+        gtk_window_set_title (GTK_WINDOW (msg_dlg), "");
+        gtk_window_set_modal (GTK_WINDOW (msg_dlg), TRUE);
+        gtk_window_set_decorated (GTK_WINDOW (msg_dlg), FALSE);
+        gtk_window_set_destroy_with_parent (GTK_WINDOW (msg_dlg), TRUE);
+        gtk_window_set_skip_taskbar_hint (GTK_WINDOW (msg_dlg), TRUE);
+        GtkWidget *frame = gtk_frame_new (NULL);
+        GtkWidget *label = (GtkWidget *) gtk_label_new (_("Setting timezone - please wait..."));
+        gtk_misc_set_padding (GTK_MISC (label), 20, 20);
+        gtk_container_add (GTK_CONTAINER (gtk_dialog_get_content_area (GTK_DIALOG (msg_dlg))), frame);
+        gtk_container_add (GTK_CONTAINER (frame), label);
 	    gtk_widget_show_all (msg_dlg);
 
         // launch a thread with the system call to update the timezone
@@ -778,6 +801,12 @@ static int process_changes (void)
             else system (SET_BOOT_CLI);
         }
         reboot = 1;
+    }
+    
+    if (orig_netwait != gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (netwait_cb)))
+    {
+        if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (netwait_cb))) system (SET_BOOT_SLOW);
+        else system (SET_BOOT_FAST);
     }
 
     if (orig_camera != gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (camera_on_rb)))
@@ -947,6 +976,12 @@ static int autologin_enabled (void)
     }
 }
 
+static int netwait_enabled (void)
+{
+    if (!get_status (GET_BOOT_SLOW)) return 1;
+    else return 0;
+}
+
 /* The dialog... */
 
 int main (int argc, char *argv[])
@@ -954,7 +989,6 @@ int main (int argc, char *argv[])
 	GtkBuilder *builder;
 	GObject *item;
 	GtkWidget *dlg;
-	int res;
 
 #ifdef ENABLE_NLS
     setlocale (LC_ALL, "");
@@ -1012,6 +1046,10 @@ int main (int argc, char *argv[])
 	autologin_cb = gtk_builder_get_object (builder, "checkbutton1");
     if (orig_autolog = autologin_enabled ()) gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (autologin_cb), TRUE);
     else gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (autologin_cb), FALSE);
+
+	netwait_cb = gtk_builder_get_object (builder, "checkbutton2");
+    if (orig_netwait = netwait_enabled ()) gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (netwait_cb), TRUE);
+    else gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (netwait_cb), FALSE);
 
 	camera_on_rb = gtk_builder_get_object (builder, "radiobutton3");
 	camera_off_rb = gtk_builder_get_object (builder, "radiobutton4");
@@ -1089,9 +1127,17 @@ int main (int argc, char *argv[])
 	get_string (GET_HOSTNAME, orig_hostname);
 	gtk_entry_set_text (GTK_ENTRY (hostname_tb), orig_hostname);
 
+	GdkPixbuf *win_icon = gtk_window_get_icon (GTK_WINDOW (main_dlg));
+	GList *list;
+	list = g_list_append (list, win_icon);
+	gtk_window_set_default_icon_list (list);
+
     needs_reboot = 0;
-    res = gtk_dialog_run (GTK_DIALOG (main_dlg));
-	if (needs_reboot || (res == GTK_RESPONSE_OK && process_changes()))
+    if (gtk_dialog_run (GTK_DIALOG (main_dlg)) == GTK_RESPONSE_OK)
+    {
+        if (process_changes ()) needs_reboot = 1;
+    }
+	if (needs_reboot)
 	{
 	    dlg = (GtkWidget *) gtk_builder_get_object (builder, "rebootdlg");
 	    if (gtk_dialog_run (GTK_DIALOG (dlg)) == GTK_RESPONSE_YES)
