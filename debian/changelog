@@ -1,0 +1,11 @@
+rc-gui (0.2-1) jessie; urgency=low
+
+  * 0.2 upstream release
+
+ -- Serge Schneider <serge@raspberrypi.org>  Mon, 19 Oct 2015 14:44:26 +0100
+
+rc-gui (0.1-1) jessie; urgency=low
+
+  * Initial release
+
+ -- Serge Schneider <serge@raspberrypi.org>  Tue, 15 Sep 2015 09:01:25 +0100
