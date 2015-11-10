@@ -2,7 +2,7 @@ Source: rc-gui
 Section: admin
 Priority: optional
 Maintainer: Serge Schneider <serge@raspberrypi.org>
-Build-Depends: debhelper (>= 9), autotools-dev, libglib2.0-dev, libgtk2.0-dev,
+Build-Depends: debhelper (>= 9), dh-autoreconf, libglib2.0-dev, libgtk2.0-dev,
  libx11-dev, intltool
 Standards-Version: 3.9.6
 Homepage: https://github.com/RPi-Distro/rc_gui
