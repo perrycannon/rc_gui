@@ -1,1 +1,3 @@
 01-remove-libxml-req.diff
+0001-Result-from-timezone-setting-checked-to-see-if-a-cha.patch
+0002-Non-thread-safe-GTK-calls-removed-to-main-thread.patch
