@@ -1,3 +1,10 @@
+rc-gui (0.4-1) jessie; urgency=medium
+
+  * 0.4 release
+  * Remove upstreamed patches
+
+ -- Serge Schneider <serge@raspberrypi.org>  Fri, 08 Jan 2016 13:16:55 +0000
+
 rc-gui (0.3-2) jessie; urgency=medium
 
   * Non thread-safe GTK+ calls removed to main thread
