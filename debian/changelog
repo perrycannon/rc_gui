@@ -1,3 +1,9 @@
+rc-gui (0.5-1) jessie; urgency=medium
+
+  * 0.5 release
+
+ -- Serge Schneider <serge@raspberrypi.org>  Mon, 01 Feb 2016 12:35:08 +0000
+
 rc-gui (0.4-1) jessie; urgency=medium
 
   * 0.4 release
