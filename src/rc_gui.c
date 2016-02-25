@@ -39,7 +39,7 @@
 #define GET_SSH         "service ssh status | grep -q inactive ; echo $?"
 #define GET_SPI         "cat /boot/config.txt | grep -q -E \"^(device_tree_param|dtparam)=([^,]*,)*spi(=(on|true|yes|1))?(,.*)?$\" ; echo $?"
 #define GET_I2C         "cat /boot/config.txt | grep -q -E \"^(device_tree_param|dtparam)=([^,]*,)*i2c(_arm)?(=(on|true|yes|1))?(,.*)?$\" ; echo $?"
-#define GET_SERIAL      "cat /boot/cmdline.txt | grep -q console=ttyAMA0 ; echo $?"
+#define GET_SERIAL      "cat /boot/cmdline.txt | grep -q -E \"(console=ttyAMA0|console=serial0)\" ; echo $?"
 #define GET_BOOT_GUI    "service lightdm status | grep -q inactive ; echo $?"
 #define GET_BOOT_SLOW   "test -e /etc/systemd/system/dhcpcd.service.d/wait.conf ; echo $?"
 #define GET_ALOG_SYSD   "cat /etc/systemd/system/getty.target.wants/getty@tty1.service | grep -q autologin ; echo $?"
@@ -64,10 +64,12 @@
 #define CHANGE_PASSWD   "echo pi:%s | sudo chpasswd"
 #define EXPAND_FS       "sudo raspi-config nonint do_expand_rootfs"
 #define FIND_LOCALE     "grep '%s ' /usr/share/i18n/SUPPORTED"
+#define GET_WIFI_CTRY	"grep country= /etc/wpa_supplicant/wpa_supplicant.conf | cut -d \"=\" -f 2"
+#define SET_WIFI_CTRY   "sudo raspi-config nonint do_configure_wifi_country %s"
 
 /* Controls */
 
-static GObject *expandfs_btn, *passwd_btn, *locale_btn, *timezone_btn, *keyboard_btn, *rastrack_btn;
+static GObject *expandfs_btn, *passwd_btn, *locale_btn, *timezone_btn, *keyboard_btn, *rastrack_btn, *wifi_btn;
 static GObject *boot_desktop_rb, *boot_cli_rb, *camera_on_rb, *camera_off_rb;
 static GObject *overscan_on_rb, *overscan_off_rb, *ssh_on_rb, *ssh_off_rb;
 static GObject *spi_on_rb, *spi_off_rb, *i2c_on_rb, *i2c_off_rb, *serial_on_rb, *serial_off_rb;
@@ -75,7 +77,7 @@ static GObject *autologin_cb, *netwait_cb;
 static GObject *overclock_cb, *memsplit_sb, *hostname_tb;
 static GObject *pwentry1_tb, *pwentry2_tb, *pwok_btn;
 static GObject *rtname_tb, *rtemail_tb, *rtok_btn;
-static GObject *tzarea_cb, *tzloc_cb;
+static GObject *tzarea_cb, *tzloc_cb, *wccountry_cb;
 static GObject *loclang_cb, *loccount_cb, *locchar_cb;
 static GObject *language_ls, *country_ls;
 
@@ -121,6 +123,7 @@ static void get_string (char *cmd, char *name)
     FILE *fp = popen (cmd, "r");
     char buf[64];
 
+    name[0] = 0;
     if (fp == NULL) return;
     if (fgets (buf, sizeof (buf) - 1, fp) != NULL)
     {
@@ -742,6 +745,63 @@ static void on_set_timezone (GtkButton* btn, gpointer ptr)
 	gtk_widget_destroy (dlg);
 }
 
+/* Wifi country setting */
+
+static void on_set_wifi (GtkButton* btn, gpointer ptr)
+{
+    GtkBuilder *builder;
+    GtkWidget *dlg;
+    char buffer[128], cnow[16], *cptr;
+    FILE *fp;
+    int n, found;
+
+    builder = gtk_builder_new ();
+    gtk_builder_add_from_file (builder, PACKAGE_DATA_DIR "/rc_gui.ui", NULL);
+    dlg = (GtkWidget *) gtk_builder_get_object (builder, "wcdialog");
+    gtk_window_set_transient_for (GTK_WINDOW (dlg), GTK_WINDOW (main_dlg));
+
+    GtkWidget *table = (GtkWidget *) gtk_builder_get_object (builder, "wctable");
+    wccountry_cb = (GObject *) gtk_combo_box_new_text ();
+    gtk_table_attach (GTK_TABLE (table), GTK_WIDGET (wccountry_cb), 1, 2, 0, 1, GTK_FILL | GTK_SHRINK, GTK_FILL | GTK_SHRINK, 0, 0);
+    gtk_widget_show_all (GTK_WIDGET (wccountry_cb));
+
+    // get the current country setting
+    get_string (GET_WIFI_CTRY, cnow);
+
+    // populate the combobox
+    fp = fopen ("/usr/share/zoneinfo/iso3166.tab", "rb");
+    n = 0;
+    found = 0;
+    while (fgets (buffer, sizeof (buffer) - 1, fp))
+    {
+        if (buffer[0] != 0x0A && buffer[0] != '#')
+        {
+            buffer[strlen(buffer) - 1] = 0;
+            gtk_combo_box_append_text (GTK_COMBO_BOX (wccountry_cb), buffer);
+            if (!strncmp (cnow, buffer, 2)) found = n;
+            n++;
+        }
+    }
+    gtk_combo_box_set_active (GTK_COMBO_BOX (wccountry_cb), found);
+
+    g_object_unref (builder);
+
+    if (gtk_dialog_run (GTK_DIALOG (dlg)) == GTK_RESPONSE_OK)
+    {
+        // update the wpa_supplicant.conf file
+        sprintf (buffer, "%s", gtk_combo_box_get_active_text (GTK_COMBO_BOX (wccountry_cb)));
+        if (strncmp (cnow, buffer, 2))
+        {
+            strncpy (cnow, buffer, 2);
+            cnow[2] = 0;
+            sprintf (buffer, SET_WIFI_CTRY, cnow);
+            system (buffer);
+            needs_reboot = 1;
+        }
+    }
+    gtk_widget_destroy (dlg);
+}
+
 /* Rastrack setting */
 
 static void rt_change (GtkEntry *entry, gpointer ptr)
@@ -1061,10 +1121,13 @@ int main (int argc, char *argv[])
 	
 	keyboard_btn = gtk_builder_get_object (builder, "button7");
 	g_signal_connect (keyboard_btn, "clicked", G_CALLBACK (on_set_keyboard), NULL);
-	
+
 	rastrack_btn = gtk_builder_get_object (builder, "button8");
 	g_signal_connect (rastrack_btn, "clicked", G_CALLBACK (on_set_rastrack), NULL);
-		
+
+	wifi_btn = gtk_builder_get_object (builder, "button11");
+	g_signal_connect (wifi_btn, "clicked", G_CALLBACK (on_set_wifi), NULL);
+
 	boot_desktop_rb = gtk_builder_get_object (builder, "radiobutton1");
 	boot_cli_rb = gtk_builder_get_object (builder, "radiobutton2");
 	if (orig_boot = get_status (GET_BOOT_GUI)) gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (boot_desktop_rb), TRUE);
