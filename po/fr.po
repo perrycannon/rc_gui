@@ -1,313 +1,314 @@
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-#
-# Jeff Huang <s8321414@chakraos.org>, 2016.
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-23 17:43+0000\n"
-"PO-Revision-Date: 2016-03-25 08:06+0800\n"
-"Last-Translator: Jeff Huang <s8321414@chakraos.org>\n"
-"Language-Team: Chinese <chinese-l10n@googlegroups.com>\n"
-"Language: zh_TW\n"
+"POT-Creation-Date: 2016-03-16 12:42+0000\n"
+"PO-Revision-Date: Wed Mar 16 2016 14:12:27 GMT+0100 (Paris, Madrid)\n"
+"Last-Translator: Louis Desplanche <l.desplanche@gmail.com>\n"
+"Language-Team: \n"
+"Language: French\n"
+"Plural-Forms: nplurals=2; plural=n > 1\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Lokalize 2.0\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Loco-Source-Locale: fr_FR\n"
+"X-Loco-Parser: loco_parse_po\n"
+"X-Loco-Target-Locale: fr\n"
+"X-Generator: Loco - https://localise.biz/"
 
 #: ../src/rc_gui.c:575
 msgid "Setting locale - please wait..."
-msgstr "正在設定語系 - 請稍候..."
+msgstr "Configuration de la Localisation - Merci de patienter..."
 
 #: ../src/rc_gui.c:735
 msgid "Setting timezone - please wait..."
-msgstr "正在設定時區 - 請稍候..."
+msgstr "Configuration du fuseau horaire - Merci de Patienter..."
 
 #: ../data/rc_gui.ui.h:1 ../data/rc_gui.desktop.in.h:1
 msgid "Raspberry Pi Configuration"
-msgstr "Raspberry Pi 設定"
+msgstr "Configuration du Raspberry Pi "
 
 #: ../data/rc_gui.ui.h:2
 msgid "Filesystem:"
-msgstr "檔案系統："
+msgstr "Système de fichier:"
 
 #: ../data/rc_gui.ui.h:3
 msgid "Expand _Filesystem"
-msgstr "擴展檔案系統(_F)"
+msgstr "Étendre le système de fichier"
 
 #: ../data/rc_gui.ui.h:4
 msgid "Ensure that all of the SD card storage is available to the OS"
-msgstr "確保整個 SD 記憶卡的儲存空間都可以給作業系統使用"
+msgstr "Assurez-vous que tous le stockage de la carte SD est alloué à l'OS"
 
 #: ../data/rc_gui.ui.h:5
 msgid "Password:"
-msgstr "密碼："
+msgstr "Mot de passe:"
 
 #: ../data/rc_gui.ui.h:6
 msgid "Change _Password..."
-msgstr "變更密碼... (_P)"
+msgstr "Changer de _Mot de passe..."
 
 #: ../data/rc_gui.ui.h:7
 msgid "Change password for the default user (pi)"
-msgstr "為預設的使用者 (pi) 變更密碼"
+msgstr "Changer le mot de passe de l'utilisateur par défaut (pi)"
 
 #: ../data/rc_gui.ui.h:8
 msgid "Hostname:"
-msgstr "主機名稱："
+msgstr "Hostname:"
 
 #: ../data/rc_gui.ui.h:9
 msgid "Set the name of your Pi on a local network"
-msgstr "設定您的 Pi 在本機網路上的名稱"
+msgstr "Régler le nom du votre Pi sur votre réseau local"
 
 #: ../data/rc_gui.ui.h:10
 msgid "Boot:"
-msgstr "開機："
+msgstr "Boot:"
 
 #: ../data/rc_gui.ui.h:11
 msgid "To Desktop"
-msgstr "到桌面"
+msgstr "vers le Bureau"
 
 #: ../data/rc_gui.ui.h:12
 msgid "Launch the desktop environment automatically on boot"
-msgstr "在開機時自動進入桌面環境"
+msgstr "Lancer automatiquement le bureau au démarrage"
 
 #: ../data/rc_gui.ui.h:13
 msgid "To CLI"
-msgstr "到命令列介面"
+msgstr "vers la Console"
 
 #: ../data/rc_gui.ui.h:14
 msgid "Boot into a command line shell rather than the desktop"
-msgstr "開機時進入命令列殼層而非桌面環境"
+msgstr "Booter dans la console plutôt que dans le bureau"
 
 #: ../data/rc_gui.ui.h:15
 msgid "Auto login:"
-msgstr "自動登入："
+msgstr "Connexion automatique:"
 
 #: ../data/rc_gui.ui.h:16
 msgid "Login as user 'pi'"
-msgstr "登入為使用者「pi」"
+msgstr "Se connecter en tant que 'pi'"
 
 #: ../data/rc_gui.ui.h:17
 msgid "Automatically log in the default user (pi)"
-msgstr "自動登入到預設的使用者 (pi)"
+msgstr "Se connecter automatiquement en tant qu’utilisateur par défaut (pi)"
 
 #: ../data/rc_gui.ui.h:18
 msgid "Network at Boot:"
-msgstr "開機時的網路："
+msgstr "Network at Boot:"
 
 #: ../data/rc_gui.ui.h:19
 msgid "Wait for network"
-msgstr "等待網路"
+msgstr "Attendre la connexion internet"
 
 #: ../data/rc_gui.ui.h:20
 msgid "Do not complete boot until network connection is established"
-msgstr "在網路連線建立前不要完成開機"
+msgstr "Ne pas continuer le démarrage jusqu'au moment où la connexion est établie"
 
 #: ../data/rc_gui.ui.h:21
 msgid "Overscan:"
-msgstr "過掃描："
+msgstr "Overscan:"
 
 #: ../data/rc_gui.ui.h:22
 msgid "Enable"
-msgstr "啟用"
+msgstr "Activé"
 
 #: ../data/rc_gui.ui.h:23
 msgid "Enable overscan to show the edges of the screen"
-msgstr "啟用過掃描以顯示螢幕的邊緣"
+msgstr "Enable overscan to show the edges of the screen"
 
 #: ../data/rc_gui.ui.h:24
 msgid "Disable"
-msgstr "停用"
+msgstr "Désactivé"
 
 #: ../data/rc_gui.ui.h:25
 msgid "Disable overscan to hide black outline on screen"
-msgstr "停用過掃描以隱藏螢幕上的黑色外框"
+msgstr "Disable overscan to hide black outline on screen"
 
 #: ../data/rc_gui.ui.h:26
 msgid "Rastrack:"
-msgstr "Rastrack："
+msgstr "Rastrack:"
 
 #: ../data/rc_gui.ui.h:27
 msgid "Add to _Rastrack..."
-msgstr "加入 Rastrack... (_R)"
+msgstr "Ajouter à _Rastrack..."
 
 #: ../data/rc_gui.ui.h:28
 msgid "Add this Pi to the online Raspberry Pi map"
-msgstr "將這臺 Pi 加入到線上的 Raspberry Pi 地圖中"
+msgstr "Ajouter ce PI à la carte en ligne Raspberry Pi"
 
 #: ../data/rc_gui.ui.h:29
 msgid "System"
-msgstr "系統"
+msgstr "Système"
 
 #: ../data/rc_gui.ui.h:30
 msgid "Camera:"
-msgstr "攝影機："
+msgstr "Caméra:"
 
 #: ../data/rc_gui.ui.h:31
 msgid "Enable the Raspberry Pi Camera Board"
-msgstr "啟用 Raspberry Pi 攝影機板"
+msgstr "Activer la Caméra Raspberry PI"
 
 #: ../data/rc_gui.ui.h:32
 msgid "Disable the Raspberry Pi Camera Board"
-msgstr "停用 Raspberry Pi 攝影機板"
+msgstr "Désactiver la Caméra Raspberry PI"
 
 #: ../data/rc_gui.ui.h:33
 msgid "SSH:"
-msgstr "SSH："
+msgstr "SSH:"
 
 #: ../data/rc_gui.ui.h:34
 msgid "Enable remote access to this Pi via SSH"
-msgstr "啟用經由 SSH 遠端存取這臺 Pi"
+msgstr "Activer le point d’accès à ditstance vers le PI par le biais de SSH"
 
 #: ../data/rc_gui.ui.h:35
 msgid "Disable remote access to this Pi via SSH"
-msgstr "停用經由 SSH 遠端存取這臺 Pi"
+msgstr "Désactiver le point d’accès à distance vers le PI par le biais de SSH"
 
 #: ../data/rc_gui.ui.h:36
 msgid "SPI:"
-msgstr "SPI："
+msgstr "SPI:"
 
 #: ../data/rc_gui.ui.h:37
 msgid "Enable the automatic loading of the SPI kernel module"
-msgstr "啟用自動載入 SPI 核心模組"
+msgstr "Activer le chargement automatique du module noyau SPI"
 
 #: ../data/rc_gui.ui.h:38
 msgid "Disable the automatic loading of the SPI kernel module"
-msgstr "停用自動載入 SPI 核心模組"
+msgstr "Désactiver le chargement automatique du module noyau SPI"
 
 #: ../data/rc_gui.ui.h:39
 msgid "I2C:"
-msgstr "I2C："
+msgstr "I2C:"
 
 #: ../data/rc_gui.ui.h:40
 msgid "Enable the automatic loading of the I2C kernel module"
-msgstr "啟用自動載入 I2C 核心模組"
+msgstr "Activer le chargement automatique du module noyau I2C"
 
 #: ../data/rc_gui.ui.h:41
 msgid "Disable the automatic loading of the I2C kernel module"
-msgstr "停用自動載入 I2C 核心模組"
+msgstr "Désactiver le chargement automatique du module noyau I2C"
 
 #: ../data/rc_gui.ui.h:42
 msgid "Serial:"
-msgstr "串列："
+msgstr "Série:"
 
+# kernel can be translated by "noyau". But french developers call them "kernel"
 #: ../data/rc_gui.ui.h:43
 msgid "Enable shell and kernel messages on the serial connection"
-msgstr "在串列連線中啟用殼層與核心訊息"
+msgstr "Activer le les messages du shell et du kernel sur les connections séries "
 
 #: ../data/rc_gui.ui.h:44
 msgid "Disable shell and kernel messages on the serial connection"
-msgstr "在串列連線中停用殼層與核心訊息"
+msgstr "Désactiver le les messages du shell et du kernel sur les connections séries "
 
 #: ../data/rc_gui.ui.h:45
 msgid "Interfaces"
-msgstr "介面"
+msgstr "Interfaces"
 
 #: ../data/rc_gui.ui.h:46
 msgid "O_verclock:"
-msgstr "超頻(_V)："
+msgstr "Overclock:"
 
 #: ../data/rc_gui.ui.h:47
 msgid "Set the level of overclock to control performance"
-msgstr "設定超頻等級以控制效能"
+msgstr "Set the level of overclock to control performance"
 
 #: ../data/rc_gui.ui.h:48
 msgid "None (700MHz)"
-msgstr "無 (700MHz)"
+msgstr "Aucun (700MHz)"
 
 #: ../data/rc_gui.ui.h:49
 msgid "Modest (800MHz)"
-msgstr "適量 (800MHz)"
+msgstr "Faible (800MHz)"
 
 #: ../data/rc_gui.ui.h:50
 msgid "Medium (900MHz)"
-msgstr "中等 (900MHz)"
+msgstr "Moyen (900MHz)"
 
 #: ../data/rc_gui.ui.h:51
 msgid "High (950MHz)"
-msgstr "高 (950MHz)"
+msgstr "Haut (950MHz)"
 
 #: ../data/rc_gui.ui.h:52
 msgid "Turbo (1000MHz)"
-msgstr "渦輪加速 (1000MHz)"
+msgstr "Turbo (1000MHz)"
 
 #: ../data/rc_gui.ui.h:53
 msgid "None (900MHz)"
-msgstr "無 (900MHz)"
+msgstr "Aucun (900MHz)"
 
 #: ../data/rc_gui.ui.h:54
 msgid "High (1000MHz)"
-msgstr "高 (1000MHz)"
+msgstr "Haut (1000MHz)"
 
 #: ../data/rc_gui.ui.h:55
 msgid "Not available"
-msgstr "不可用"
+msgstr "Indisponible"
 
 #: ../data/rc_gui.ui.h:56
 msgid "_GPU Memory:"
-msgstr "GPU 記憶體(_G)："
+msgstr "mémoire du GPU:"
 
 #: ../data/rc_gui.ui.h:57
 msgid "Enter the amount of memory available to the GPU"
-msgstr "輸入要提供給 GPU 的記憶體大小"
+msgstr "Entrez la valeur de la mémoire alloué par le GPU"
 
 #: ../data/rc_gui.ui.h:58
 msgid "Performance"
-msgstr "效能"
+msgstr "Performance"
 
 #: ../data/rc_gui.ui.h:59
 msgid "Locale:"
-msgstr "語系："
+msgstr "Localisation:"
 
 #: ../data/rc_gui.ui.h:60
 msgid "Set _Locale..."
-msgstr "設定語系... (_L)"
+msgstr "Régler la _Localisation..."
 
 #: ../data/rc_gui.ui.h:61
 msgid "Set internationalisation settings for units etc."
-msgstr "為單位等事物設定國際化設定"
+msgstr "Régler les paramètre internationaux pour les unités, etc..."
 
 #: ../data/rc_gui.ui.h:62
 msgid "Timezone:"
-msgstr "時區："
+msgstr "Fuseau Horaire:"
 
 #: ../data/rc_gui.ui.h:63
 msgid "Set _Timezone..."
-msgstr "設定時區... (_T)"
+msgstr "Régler _Le fuseau horaire..."
 
 #: ../data/rc_gui.ui.h:64
 msgid "Set the timezone to be used by the internal clock"
-msgstr "設定要用於內部時鐘的時區"
+msgstr "Set the timezone to be used by the internal clock"
 
 #: ../data/rc_gui.ui.h:65
 msgid "Keyboard:"
-msgstr "鍵盤："
+msgstr "Clavier:"
 
 #: ../data/rc_gui.ui.h:66
 msgid "Set _Keyboard..."
-msgstr "設定鍵盤... (_K)"
+msgstr "Régler _Le clavier..."
 
 #: ../data/rc_gui.ui.h:67
 msgid "Set international keyboard options"
-msgstr "設定國際鍵盤選項"
+msgstr "Régler les paramètres les paramètres du clavier"
 
 #: ../data/rc_gui.ui.h:68
 msgid "WiFi Country:"
-msgstr "WiFi 國家："
+msgstr "Région du WiFi:"
 
 #: ../data/rc_gui.ui.h:69
 msgid "Set _WiFi Country..."
-msgstr "設定 WiFi 國家... (_W)"
+msgstr "Régler la région du _WiFi..."
 
 #: ../data/rc_gui.ui.h:70
 msgid "Set WiFi country code"
-msgstr "設定 WiFi 國碼"
+msgstr "Régler le code de région WiFi"
 
 #: ../data/rc_gui.ui.h:71
 msgid "Localisation"
-msgstr "在地化"
+msgstr "Localisation"
 
 #: ../data/rc_gui.ui.h:72
 msgid ""
@@ -318,19 +319,22 @@ msgid ""
 "application cannot be used on your system.\n"
 "\n"
 "In order to use this application, you need to have the latest firmware "
-"installed, Device Tree enabled, the default \"pi\" user set up and the "
-"lightdm application installed. "
+"installed, Device Tree enabled, the default \"pi\" user set up and the lightdm "
+"application installed. "
 msgstr ""
-"Raspberry Pi 設定應用程式只能修改標準的 設定。\n"
+"The Raspberry Pi Configuration application can only modify a standard "
+"configuration.\n"
 "\n"
-"您的設定似乎已被其他工具修改過了，所以 本應用程式無法在您的系統上使用。\n"
+"Your configuration appears to have been modified by other tools, and so this "
+"application cannot be used on your system.\n"
 "\n"
-"為了使用本應用程式，您需要安裝最新的韌體， 並啟用裝置樹，預設的「pi」使用者設"
-"定好並 安裝好 lightdm。 "
+"In order to use this application, you need to have the latest firmware "
+"installed, Device Tree enabled, the default \"pi\" user set up and the lightdm "
+"application installed. "
 
 #: ../data/rc_gui.ui.h:77
 msgid "Filesystem Expanded"
-msgstr "檔案系統已擴展"
+msgstr "Système de Fichier étendu "
 
 #: ../data/rc_gui.ui.h:78
 msgid ""
@@ -338,41 +342,41 @@ msgid ""
 "\n"
 "The new space will not be available until you reboot your Raspberry Pi."
 msgstr ""
-"檔案系統已經被擴展了。\n"
+"Système de Fichier a été étendu.\n"
 "\n"
-"在您重新啟動您的 Raspberry Pi 後，新的空間才可用。"
+"Le nouvel espace ne sera pas disponible avant le prochain redémarrage."
 
 #: ../data/rc_gui.ui.h:81
 msgid "Locale"
-msgstr "語系"
+msgstr "Localisation"
 
 #: ../data/rc_gui.ui.h:82
 msgid "Language:"
-msgstr "語言："
+msgstr "Langue:"
 
 #: ../data/rc_gui.ui.h:83
 msgid "Country:"
-msgstr "國家："
+msgstr "Pays:"
 
 #: ../data/rc_gui.ui.h:84
 msgid "Character Set:"
-msgstr "字元集："
+msgstr "Character Set:"
 
 #: ../data/rc_gui.ui.h:85
 msgid "Change Password"
-msgstr "變更密碼"
+msgstr "Changer le Mot de Passe"
 
 #: ../data/rc_gui.ui.h:86
 msgid "Enter new password:"
-msgstr "輸入新的密碼："
+msgstr "Entrez un nouveau mot de passe"
 
 #: ../data/rc_gui.ui.h:87
 msgid "Confirm new password:"
-msgstr "確認新的密碼："
+msgstr "Confirmer le nouveau mot de passe"
 
 #: ../data/rc_gui.ui.h:88
 msgid "Rastrack Registration"
-msgstr "Rastrack 註冊"
+msgstr "Inscription à Rastrack"
 
 #: ../data/rc_gui.ui.h:89
 msgid ""
@@ -380,25 +384,27 @@ msgid ""
 "of Raspberry Pis around the world. If you would like to be added to it, "
 "enter your name and email address below.\n"
 "\n"
-"This is entirely optional and does not form an official registration "
-"process.\n"
-msgstr ""
-"Rastrack (http://www.rastrack.co.uk) 是一個會追蹤世界各地的 Raspberry Pi 的網"
-"頁。若您想要加入， 請在下方輸入您的名字與電子郵件地址。\n"
+"This is entirely optional and does not form an official registration process."
 "\n"
-"這完全是一個選擇性且並非官方的註冊 程序。\n"
+msgstr ""
+"Rastrack (http://www.rastrack.co.uk) is a website which tracks the location "
+"of Raspberry Pis around the world. If you would like to be added to it, "
+"enter your name and email address below.\n"
+"\n"
+"This is entirely optional and does not form an official registration process."
+"\n"
 
 #: ../data/rc_gui.ui.h:93
 msgid "Username:"
-msgstr "使用者名稱："
+msgstr "Pseudo:"
 
 #: ../data/rc_gui.ui.h:94
 msgid "Email Address:"
-msgstr "電子郵件地址："
+msgstr "Adresse E-Mail:"
 
 #: ../data/rc_gui.ui.h:95
 msgid "Reboot needed"
-msgstr "需要重新啟動"
+msgstr "Redémarrage requis"
 
 #: ../data/rc_gui.ui.h:96
 msgid ""
@@ -407,28 +413,27 @@ msgid ""
 "\n"
 "Would you like to reboot now? "
 msgstr ""
-"您所做出的變更需要重新啟動 Raspberry Pi 以產生效果。\n"
+"Les changements que vous avez fait sur votre Raspberry Pi requière un "
+"redémarrage pour être opérationnelle.\n"
 "\n"
-"您想要立刻重新啟動嗎？ "
+"Voulez-vous redémarrer maintenant ?"
 
 #: ../data/rc_gui.ui.h:99
 msgid "Timezone"
-msgstr "時區"
+msgstr "Fuseau horaire"
 
 #: ../data/rc_gui.ui.h:100
 msgid "Area:"
-msgstr "區域："
+msgstr "Area:"
 
 #: ../data/rc_gui.ui.h:101
 msgid "Location:"
-msgstr "位置："
+msgstr "Location:"
 
 #: ../data/rc_gui.ui.h:102
 msgid "WiFi Country Code"
-msgstr "WiFi 國碼"
+msgstr "Code de région WiFi"
 
 #: ../data/rc_gui.desktop.in.h:2
 msgid "Configure Raspberry Pi system"
-msgstr "設定 Raspberry Pi 系統"
-
-
+msgstr "Configurer le système du Raspberry Pi"
