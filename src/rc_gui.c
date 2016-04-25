@@ -34,6 +34,9 @@
 #define GET_MEM_GPU     "vcgencmd get_mem gpu"
 #define GET_OVERCLOCK   "sudo raspi-config nonint get_config_var arm_freq /boot/config.txt"
 #define GET_GPU_MEM     "sudo raspi-config nonint get_config_var gpu_mem /boot/config.txt"
+#define GET_GPU_MEM_256 "sudo raspi-config nonint get_config_var gpu_mem_256 /boot/config.txt"
+#define GET_GPU_MEM_512 "sudo raspi-config nonint get_config_var gpu_mem_512 /boot/config.txt"
+#define GET_GPU_MEM_1K  "sudo raspi-config nonint get_config_var gpu_mem_1024 /boot/config.txt"
 #define GET_OVERSCAN    "sudo raspi-config nonint get_config_var disable_overscan /boot/config.txt"
 #define GET_CAMERA      "sudo raspi-config nonint get_config_var start_x /boot/config.txt"
 #define GET_SSH         "service ssh status | grep -q inactive ; echo $?"
@@ -46,6 +49,7 @@
 #define GET_ALOG_SYSD   "cat /etc/systemd/system/getty.target.wants/getty@tty1.service | grep -q autologin ; echo $?"
 #define GET_ALOG_INITD  "cat /etc/inittab | grep -q login ; echo $?"
 #define GET_ALOG_GUI    "cat /etc/lightdm/lightdm.conf | grep -q \"#autologin-user=\" ; echo $?"
+#define GET_RGPIO  		"test -e /etc/systemd/system/pigpio.service.d/public.conf ; echo $?"
 #define SET_HOSTNAME    "sudo raspi-config nonint do_change_hostname %s"
 #define SET_OVERCLOCK   "sudo raspi-config nonint do_overclock %s"
 #define SET_GPU_MEM     "sudo raspi-config nonint do_memory_split %d"
@@ -62,6 +66,8 @@
 #define SET_BOOT_GUIA   "sudo raspi-config nonint do_boot_behaviour_new B4"
 #define SET_BOOT_FAST   "sudo raspi-config nonint do_wait_for_network Fast"
 #define SET_BOOT_SLOW   "sudo raspi-config nonint do_wait_for_network Slow"
+#define SET_GPIO_PUB    "sudo raspi-config nonint do_gpiosec Public"
+#define SET_GPIO_PRIV   "sudo raspi-config nonint do_gpiosec Private"
 #define SET_RASTRACK    "curl --data \"name=%s&email=%s\" http://rastrack.co.uk/api.php"
 #define CHANGE_PASSWD   "echo pi:%s | sudo chpasswd"
 #define EXPAND_FS       "sudo raspi-config nonint do_expand_rootfs"
@@ -73,7 +79,7 @@
 
 static GObject *expandfs_btn, *passwd_btn, *locale_btn, *timezone_btn, *keyboard_btn, *rastrack_btn, *wifi_btn;
 static GObject *boot_desktop_rb, *boot_cli_rb, *camera_on_rb, *camera_off_rb;
-static GObject *overscan_on_rb, *overscan_off_rb, *ssh_on_rb, *ssh_off_rb;
+static GObject *overscan_on_rb, *overscan_off_rb, *ssh_on_rb, *ssh_off_rb, *rgpio_on_rb, *rgpio_off_rb;
 static GObject *spi_on_rb, *spi_off_rb, *i2c_on_rb, *i2c_off_rb, *serial_on_rb, *serial_off_rb, *onewire_on_rb, *onewire_off_rb;
 static GObject *autologin_cb, *netwait_cb;
 static GObject *overclock_cb, *memsplit_sb, *hostname_tb;
@@ -89,7 +95,7 @@ static GtkWidget *main_dlg, *msg_dlg;
 
 static char orig_hostname[128];
 static int orig_boot, orig_overscan, orig_camera, orig_ssh, orig_spi, orig_i2c, orig_serial;
-static int orig_clock, orig_gpumem, orig_autolog, orig_netwait, orig_onewire;
+static int orig_clock, orig_gpumem, orig_autolog, orig_netwait, orig_onewire, orig_rgpio;
 
 /* Reboot flag set after locale change */
 
@@ -151,6 +157,21 @@ static int get_total_mem (void)
         sscanf (buf, "gpu=%dM", &gpu);
         
     return arm + gpu;    
+}
+
+static int get_gpu_mem (void)
+{
+	int mem, tmem = get_total_mem ();
+	if (tmem > 512)
+		mem = get_status (GET_GPU_MEM_1K);
+	else if (tmem > 256)
+		mem = get_status (GET_GPU_MEM_512);
+	else
+		mem = get_status (GET_GPU_MEM_256);
+
+	if (mem == 0) mem = get_status (GET_GPU_MEM);
+	if (mem == 0) mem = 64;
+	return mem;
 }
 
 static void get_quoted_param (char *path, char *fname, char *toseek, char *result)
@@ -941,6 +962,12 @@ static int process_changes (void)
 	    reboot = 1;
     }
 
+    if (orig_rgpio != gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (rgpio_off_rb)))
+    {
+        if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (rgpio_off_rb))) system (SET_GPIO_PRIV);
+        else system (SET_GPIO_PUB);
+    }
+
     if (strcmp (orig_hostname, gtk_entry_get_text (GTK_ENTRY (hostname_tb))))
     {
         sprintf (buffer, SET_HOSTNAME, gtk_entry_get_text (GTK_ENTRY (hostname_tb)));
@@ -1184,7 +1211,12 @@ int main (int argc, char *argv[])
 	onewire_off_rb = gtk_builder_get_object (builder, "radiobutton18");
 	if (orig_onewire = get_status (GET_1WIRE)) gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (onewire_off_rb), TRUE);
 	else gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (onewire_on_rb), TRUE);
-	
+
+	rgpio_on_rb = gtk_builder_get_object (builder, "radiobutton19");
+	rgpio_off_rb = gtk_builder_get_object (builder, "radiobutton20");
+	if (orig_rgpio = get_status (GET_RGPIO)) gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (rgpio_off_rb), TRUE);
+	else gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (rgpio_on_rb), TRUE);
+
     switch (get_status (GET_PI_TYPE))
 	{
 	    case 1:
@@ -1236,8 +1268,7 @@ int main (int argc, char *argv[])
 	GtkObject *adj = gtk_adjustment_new (64.0, 16.0, get_total_mem () - 128, 16.0, 64.0, 0);
 	memsplit_sb = gtk_builder_get_object (builder, "spinbutton1");
 	gtk_spin_button_set_adjustment (GTK_SPIN_BUTTON (memsplit_sb), GTK_ADJUSTMENT (adj));
-	orig_gpumem = get_status (GET_GPU_MEM);
-	if (orig_gpumem == 0) orig_gpumem = 64;
+	orig_gpumem = get_gpu_mem ();
 	gtk_spin_button_set_value (GTK_SPIN_BUTTON (memsplit_sb), orig_gpumem);
 
 	hostname_tb = gtk_builder_get_object (builder, "entry1");
