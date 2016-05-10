@@ -39,17 +39,17 @@
 #define GET_GPU_MEM_1K  "sudo raspi-config nonint get_config_var gpu_mem_1024 /boot/config.txt"
 #define GET_OVERSCAN    "sudo raspi-config nonint get_config_var disable_overscan /boot/config.txt"
 #define GET_CAMERA      "sudo raspi-config nonint get_config_var start_x /boot/config.txt"
-#define GET_SSH         "service ssh status | grep -q inactive ; echo $?"
+#define GET_SSH         "service ssh status | grep -q inactive ; echo $((1-$?))"
 #define GET_SPI         "cat /boot/config.txt | grep -q -E \"^(device_tree_param|dtparam)=([^,]*,)*spi(=(on|true|yes|1))?(,.*)?$\" ; echo $?"
 #define GET_I2C         "cat /boot/config.txt | grep -q -E \"^(device_tree_param|dtparam)=([^,]*,)*i2c(_arm)?(=(on|true|yes|1))?(,.*)?$\" ; echo $?"
-#define GET_SERIAL      "cat /boot/cmdline.txt | grep -q -E \"(console=ttyAMA0|console=serial0)\" ; echo $?"
+#define GET_SERIAL      "sudo raspi-config nonint get_serial"
 #define GET_1WIRE       "cat /boot/config.txt | grep -q -E \"^dtoverlay=w1-gpio\" ; echo $?"
 #define GET_BOOT_GUI    "service lightdm status | grep -q inactive ; echo $?"
 #define GET_BOOT_SLOW   "test -e /etc/systemd/system/dhcpcd.service.d/wait.conf ; echo $?"
 #define GET_ALOG_SYSD   "cat /etc/systemd/system/getty.target.wants/getty@tty1.service | grep -q autologin ; echo $?"
 #define GET_ALOG_INITD  "cat /etc/inittab | grep -q login ; echo $?"
 #define GET_ALOG_GUI    "cat /etc/lightdm/lightdm.conf | grep -q \"#autologin-user=\" ; echo $?"
-#define GET_RGPIO  		"test -e /etc/systemd/system/pigpio.service.d/public.conf ; echo $?"
+#define GET_RGPIO  		"test -e /etc/systemd/system/pigpiod.service.d/public.conf ; echo $?"
 #define SET_HOSTNAME    "sudo raspi-config nonint do_change_hostname %s"
 #define SET_OVERCLOCK   "sudo raspi-config nonint do_overclock %s"
 #define SET_GPU_MEM     "sudo raspi-config nonint do_memory_split %d"
@@ -121,8 +121,10 @@ static int get_status (char *cmd)
     if (fgets (buf, sizeof (buf) - 1, fp) != NULL)
     {
         sscanf (buf, "%d", &res);
+        pclose (fp);
         return res;
     }
+    pclose (fp);
     return 0;
 }
 
@@ -136,8 +138,8 @@ static void get_string (char *cmd, char *name)
     if (fgets (buf, sizeof (buf) - 1, fp) != NULL)
     {
         sscanf (buf, "%s", name);
-        return;
     }
+    pclose (fp);
 }
 
 static int get_total_mem (void)
@@ -150,12 +152,14 @@ static int get_total_mem (void)
     if (fp == NULL) return 0;
     while (fgets (buf, sizeof (buf) - 1, fp) != NULL)
         sscanf (buf, "arm=%dM", &arm);
-    
+    pclose (fp);
+
     fp = popen (GET_MEM_GPU, "r");
     if (fp == NULL) return 0;
     while (fgets (buf, sizeof (buf) - 1, fp) != NULL)
         sscanf (buf, "gpu=%dM", &gpu);
-        
+    pclose (fp);
+
     return arm + gpu;    
 }
 
@@ -302,7 +306,7 @@ static void country_changed (GtkComboBox *cb, gpointer ptr)
             cptr = strtok (NULL, " \n\r");
             strcpy (init_char, cptr);
         }
-        fclose (fp);
+        pclose (fp);
     }
     else init_char[0] = 0;
 
@@ -348,7 +352,7 @@ static void country_changed (GtkComboBox *cb, gpointer ptr)
         if (!strcmp (cptr, init_char)) gtk_combo_box_set_active (GTK_COMBO_BOX (locchar_cb), char_count);
         char_count++;
     }
-    fclose (fp);
+    pclose (fp);
 
     // set the first entry active if not initialising from file
     if (!ptr) gtk_combo_box_set_active (GTK_COMBO_BOX (locchar_cb), 0);
@@ -460,7 +464,7 @@ static void on_set_locale (GtkButton* btn, gpointer ptr)
         strtok (buffer, "=");
         cptr = strtok (NULL, "\n\r");
     }
-    fclose (fp);
+    pclose (fp);
     strcpy (init_locale, cptr);
 
     // parse the initial locale to get the initial language code
@@ -547,7 +551,7 @@ static void on_set_locale (GtkButton* btn, gpointer ptr)
                 fgets (buffer, sizeof (buffer) - 1, fp);
                 cptr = strtok (buffer, " ");
                 strcpy (glocale, cptr);
-                fclose (fp);
+                pclose (fp);
             }
 
             if (glocale[0] && strcmp (glocale, init_locale))
@@ -559,7 +563,7 @@ static void on_set_locale (GtkButton* btn, gpointer ptr)
                 {
                     fgets (cb_lang, sizeof (cb_lang) - 1, fp);
                     strtok (cb_lang, "\n\r");
-                    fclose (fp);
+                    pclose (fp);
                 }
 
                 // use sed to comment that line if uncommented
@@ -576,7 +580,7 @@ static void on_set_locale (GtkButton* btn, gpointer ptr)
                 {
                     fgets (cb_lang, sizeof (cb_lang) - 1, fp);
                     strtok (cb_lang, "\n\r");
-                    fclose (fp);
+                    pclose (fp);
                 }
 
                 // use sed to uncomment that line if commented
@@ -928,10 +932,11 @@ static int process_changes (void)
 	    reboot = 1;
     }
 
-    if (orig_ssh != gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (ssh_on_rb)))
+    if (orig_ssh != gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (ssh_off_rb)))
     {
-	    sprintf (buffer, SET_SSH, orig_ssh);
+	    sprintf (buffer, SET_SSH, (1 - orig_ssh));
 	    system (buffer);
+	    reboot = 1;
     }
 
     if (orig_spi != gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (spi_off_rb)))
@@ -1189,8 +1194,8 @@ int main (int argc, char *argv[])
 	
 	ssh_on_rb = gtk_builder_get_object (builder, "radiobutton7");
 	ssh_off_rb = gtk_builder_get_object (builder, "radiobutton8");
-	if (orig_ssh = get_status (GET_SSH)) gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (ssh_on_rb), TRUE);
-	else gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (ssh_off_rb), TRUE);
+	if (orig_ssh = get_status (GET_SSH)) gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (ssh_off_rb), TRUE);
+	else gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (ssh_on_rb), TRUE);
 	
 	spi_on_rb = gtk_builder_get_object (builder, "radiobutton11");
 	spi_off_rb = gtk_builder_get_object (builder, "radiobutton12");
